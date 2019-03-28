@@ -3,7 +3,7 @@
 import asyncio
 
 
-list_of_users = []
+list_of_users = {}
 
 async def handle_echo(reader, writer):
 
@@ -11,26 +11,8 @@ async def handle_echo(reader, writer):
     name.decode()
 
     addr = writer.get_extra_info('peername')
-    addr2 = writer.get_extra_info('socket')
-    addr3 = writer.get_extra_info('socketname')
-    addr4 = writer.get_extra_info('compression')
-    addr5 = writer.get_extra_info('cipher')
-    addr6 = writer.get_extra_info('peercert')
-    addr7 = writer.get_extra_info('sslcontext')
-    addr8 = writer.get_extra_info('ssl_object')
-    addr9 = writer.get_extra_info('pipe')
-    addr0 = writer.get_extra_info('subprocess')
-
-    print('peername', addr)
-    print('socket', addr2)
-    print('socketname', addr3)
-    print('compression', addr4)
-    print('cipher', addr5)
-    print('peercert', addr6)
-    print('sslcontext', addr7)
-    print('ssl_object', addr8)
-    print('pipe', addr9)
-    print('subprocess', addr0)
+    addr = writer
+    list_of_users[addr] = name
 
     print(f"{addr!r} is connected !!!!")
 
@@ -38,9 +20,12 @@ async def handle_echo(reader, writer):
         data = await reader.read(1024)
         message = data.decode()
         if not message:
-            del list_of_users[name]
+            print('list of users before', list_of_users)
+            del list_of_users[addr]
+            print('list of users after', list_of_users)
             break
-        
+        # writer.write(message.encode())
+        msg(message)
 
 
 def msg(message):
