@@ -4,7 +4,7 @@ import asyncio
 
 
 async def tcp_echo_client(loop):
-    reader, writer = await asyncio.open_connection('localhost', 10001,
+    reader, writer = await asyncio.open_connection('127.0.0.1', 8888,
         loop=loop)
     name = input('Enter your name: ')
     writer.write(name.encode())

@@ -6,39 +6,54 @@ import asyncio
 list_of_users = []
 
 async def handle_echo(reader, writer):
-    # print(f'{writer}')
-    # print(f'{reader}')
+
     name = await reader.read(1024)
     name.decode()
-    name = {name: reader}
-    while name in list_of_users:
 
-    list_of_users.append(name)
-    # print(f'{name} join in the chat')
-    msg(f'{name} join in the chat')
+    addr = writer.get_extra_info('peername')
+    addr2 = writer.get_extra_info('socket')
+    addr3 = writer.get_extra_info('socketname')
+    addr4 = writer.get_extra_info('compression')
+    addr5 = writer.get_extra_info('cipher')
+    addr6 = writer.get_extra_info('peercert')
+    addr7 = writer.get_extra_info('sslcontext')
+    addr8 = writer.get_extra_info('ssl_object')
+    addr9 = writer.get_extra_info('pipe')
+    addr0 = writer.get_extra_info('subprocess')
+
+    print('peername', addr)
+    print('socket', addr2)
+    print('socketname', addr3)
+    print('compression', addr4)
+    print('cipher', addr5)
+    print('peercert', addr6)
+    print('sslcontext', addr7)
+    print('ssl_object', addr8)
+    print('pipe', addr9)
+    print('subprocess', addr0)
+
+    print(f"{addr!r} is connected !!!!")
+
     while True:
         data = await reader.read(1024)
         message = data.decode()
         if not message:
             del list_of_users[name]
             break
-        # addr = writer.get_extra_info('peername')
-        # print(f'recieved {message} from {name}')
+        
 
 
 def msg(message):
     for user in list_of_users:
         user.write(message.encode())
 
-loop = asyncio.get_event_loop()
-coro = asyncio.start_server(handle_echo, 'localhost', 10001, 
-    loop=loop)
-server = loop.run_until_complete(coro)
-try:
-    loop.run_forever()
-except KeyboardInterrupt:
-    pass
 
-server.close()
-loop.run_until_complete(server.wait_closed())
-loop.close()
+async def main():
+    server = await asyncio.start_server(
+        handle_echo, '127.0.0.1', 8888)
+    addr = server.sockets[0].getsockname()
+    print(f'Serving on {addr}')
+    async with server:
+        await server.serve_forever()
+
+asyncio.run(main())
